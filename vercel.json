@@ -1,7 +1,9 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/:code([A-Za-z0-9]{4,12})", "destination": "/index.html" }
+    { "source": "/", "destination": "/app-syuizi.html" },
+    { "source": "/admin", "destination": "/admin-syuizi.html" },
+    { "source": "/verifikasi", "destination": "/verifikasi-syuizi.html" },
+    { "source": "/:code([A-Za-z0-9]{4,12})", "destination": "/app-syuizi.html" }
   ]
 }
