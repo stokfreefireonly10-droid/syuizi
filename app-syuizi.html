@@ -4,7 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b0507">
-<title>Syuizi - Game Tugas Berhadiah</title>
+<title>Syuizi Penghasilan Uang - Kerjakan Tugas, Dapatkan Uang</title>
+<meta name="description" content="syuizipenghasiluang: aplikasi Syuizi untuk mengerjakan tugas, dapatkan saldo, tarik uang, dan undang teman. Daftar gratis sekarang.">
+<meta name="keywords" content="syuizi, syuizipenghasiluang, syuizi penghasilan uang, tugas berhadiah, penghasilan dari hp">
+<link rel="canonical" href="https://syuizipenghasiluang.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Syuizi">
+<meta property="og:title" content="Syuizi Penghasilan Uang - Kerjakan Tugas, Dapatkan Uang">
+<meta property="og:description" content="Daftar gratis, kerjakan tugas, dapatkan saldo, dan undang teman di Syuizi.">
+<meta property="og:url" content="https://syuizipenghasiluang.vercel.app/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Syuizi","alternateName":["syuizipenghasiluang","Syuizi Penghasilan Uang"],"url":"https://syuizipenghasiluang.vercel.app/"}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{--bgc:#0b0507;--red:#ff2e3d;--red2:#c2121f;--rg:rgba(255,46,61,.45);--card:rgba(24,14,17,.82);--card2:#1b1013;--tx:#f6ecee;--mut:#ad9a9f;--line:rgba(255,255,255,.09);--rline:rgba(255,46,61,.28);--grn:#33d489;--amb:#ffb23e;--blue:#5aa9ff}
@@ -202,6 +211,7 @@ body.auth .mtog.on{display:flex}
 <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></symbol>
 <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
 <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></symbol>
 <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
 </defs></svg>
 
@@ -292,6 +302,13 @@ body.auth .mtog.on{display:flex}
         <div id="expNote"></div>
         <button id="btnTake" onclick="takeTask()"><svg class="ic"><use href="#i-bolt"/></svg>Ambil Tugas</button>
         <div class="note">Sistem memberikan tugas dari pengguna lain. Kerjakan dalam 60 menit, lalu kirim foto bukti. Hadiah masuk ke saldo setelah disetujui.</div>
+      </div>
+      <div class="card" id="adCard" style="display:none">
+        <h2><svg class="ic"><use href="#i-play"/></svg>Misi tonton iklan</h2>
+        <div class="mut">Hari ini: <b id="adUsed" style="color:#fff">0</b> / <b id="adLimit" style="color:#fff">0</b> &middot; Hadiah <b id="adRew" style="color:#fff"></b> per iklan</div>
+        <div class="bar"><i id="adBar" style="width:0"></i></div>
+        <button id="btnAd" onclick="startAd()"><svg class="ic"><use href="#i-play"/></svg>Tonton iklan</button>
+        <div class="note" id="adNote">Tonton iklan sampai hitung mundur selesai, lalu ambil hadiahnya.</div>
       </div>
       <div class="card"><h2><svg class="ic"><use href="#i-task"/></svg>Tugas saya</h2><div id="asgList"></div></div>
     </div>
@@ -433,6 +450,16 @@ body.auth .mtog.on{display:flex}
 </div></div>
 
 <!-- Pembayaran QRIS -->
+<!-- Iklan -->
+<div class="ov" id="ovAd"><div class="modal">
+  <h2><svg class="ic"><use href="#i-play"/></svg>Tonton iklan</h2>
+  <div style="text-align:center"><div class="price" id="adCount" style="font-size:34px">0</div><div class="mut" id="adHint">Tunggu hitung mundur selesai</div></div>
+  <div class="bar"><i id="adProg" style="width:0"></i></div>
+  <div id="adBox" style="background:#fff;border-radius:12px;min-height:150px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px">Iklan dimuat di sini</div>
+  <button id="btnAdClaim" disabled onclick="claimAd()">Ambil hadiah</button>
+  <button class="sec" onclick="closeAd()">Tutup</button>
+</div></div>
+
 <div class="ov" id="ovPay"><div class="modal">
   <h2 id="payTitle">Bayar QRIS</h2>
   <div class="mut">Scan QRIS dengan e-wallet atau m-banking apa pun.</div>
@@ -649,10 +676,65 @@ async function loadCore(first){
   }catch(e){if(first||!P){toast(e.message);return false}}
   render();return true;
 }
+/* ================= Misi tonton iklan ================= */
+let AD=null,ADS=null,adT=null;
+async function loadAd(){
+  try{AD=await rpc("sz_ad_status")}catch(e){AD=null}
+  const c=$("adCard");if(!c)return;
+  if(!AD||!AD.enabled){c.style.display="none";return}
+  c.style.display="";
+  $("adUsed").textContent=AD.used;$("adLimit").textContent=AD.daily_limit;$("adRew").textContent=rp(AD.reward);
+  $("adBar").style.width=(AD.daily_limit?Math.min(100,AD.used/AD.daily_limit*100):100)+"%";
+  const b=$("btnAd");b.disabled=AD.remaining<=0;
+  $("adNote").textContent=AD.remaining<=0?"Batas iklan hari ini sudah habis. Coba lagi besok.":AD.wait>0?"Tunggu "+AD.wait+" detik untuk iklan berikutnya.":"Tonton iklan selama "+AD.seconds+" detik, lalu ambil hadiahnya.";
+}
+function adFrame(cfg){
+  const box=$("adBox");box.innerHTML="";
+  const f=document.createElement("iframe");
+  f.setAttribute("sandbox","allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms");
+  f.setAttribute("referrerpolicy","no-referrer");
+  f.style.cssText="width:100%;height:260px;border:0;background:#fff";
+  if(cfg.code){f.srcdoc='<!doctype html><html><head><meta charset="utf-8"><base target="_blank"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;display:flex;justify-content:center;align-items:center;min-height:240px;font-family:sans-serif}</style></head><body>'+cfg.code+'</body></html>'}
+  else if(safeUrl(cfg.url)){f.src=safeUrl(cfg.url)}
+  else{box.textContent="Iklan belum dipasang oleh admin";return}
+  box.appendChild(f);
+}
+async function startAd(){
+  $("btnAd").disabled=true;
+  try{
+    const s=await rpc("sz_ad_start");
+    ADS={id:s.id,sec:s.seconds,reward:s.reward,run:0,last:Date.now()};
+    adFrame(AD||{});
+    $("btnAdClaim").disabled=true;$("btnAdClaim").textContent="Ambil hadiah";$("adProg").style.width="0";
+    openOv("ovAd");adTick();clearInterval(adT);adT=setInterval(adTick,250);
+  }catch(e){toast(e.message)}
+  loadAd();
+}
+function adTick(){
+  if(!ADS)return;
+  const n=Date.now();if(!document.hidden)ADS.run+=(n-ADS.last)/1000;ADS.last=n;
+  const left=Math.max(0,Math.ceil(ADS.sec-ADS.run));
+  $("adCount").textContent=left>0?left+" detik":"Selesai";
+  $("adProg").style.width=Math.min(100,ADS.run/ADS.sec*100)+"%";
+  $("adHint").textContent=document.hidden?"Kembali ke halaman ini agar hitungan jalan":left>0?"Jangan tutup halaman ini":"Tekan tombol untuk ambil hadiah";
+  if(left<=0){clearInterval(adT);$("btnAdClaim").disabled=false}
+}
+async function claimAd(){
+  if(!ADS)return;
+  $("btnAdClaim").disabled=true;
+  try{
+    const r=await rpc("sz_ad_claim",{p_id:ADS.id});
+    toast("Hadiah "+rp(r.reward)+" masuk ke saldo");closeAd(true);loadCore();
+  }catch(e){toast(e.message);$("btnAdClaim").disabled=false}
+  loadAd();
+}
+function closeAd(done){clearInterval(adT);ADS=null;$("adBox").innerHTML="";closeOv("ovAd");loadAd()}
+
 async function loadTasks(){
   if(!P||P.blocked)return;
   try{await rpc("sz_settle_overdue");DASH=await rpc("sz_task_dashboard");MYT=await rpc("sz_my_tasks")}catch(e){}
   render();
+  if(!ADS)loadAd();
 }
 async function loadWds(){try{WDS=await sbGet("sz_withdrawals?select=metode,nomor,jumlah,status,created_at&order=created_at.desc&limit=20")}catch(e){}render()}
 async function loadDeps(){try{DEPS=await sbGet("sz_payments?select=*&kind=eq.deposit&order=created_at.desc&limit=20")}catch(e){}render()}

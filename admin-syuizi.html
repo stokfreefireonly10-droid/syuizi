@@ -226,6 +226,20 @@ nav a .dot{position:absolute;top:6px;left:56%;min-width:17px;height:17px;border-
       <label>Teman tugas hari 2 (Rp)</label><input id="rD2" type="number" inputmode="numeric">
       <div class="row"><button onclick="saveRef()"><svg class="ic" style="width:18px;height:18px"><use href="#i-save"/></svg>Simpan undangan</button></div>
     </div>
+    <div class="card">
+      <h2><svg class="ic"><use href="#i-play"/></svg>Misi tonton iklan</h2>
+      <label class="switch"><input type="checkbox" id="aOn">Aktifkan misi iklan</label>
+      <div class="mut" style="margin:6px 0 2px">Nyalakan setelah kode iklan dipasang. Hadiah dibayar dari saldo Syuizi, jadi pastikan pendapatan iklan lebih besar dari hadiah.</div>
+      <div class="two"><div><label>Hadiah per iklan (Rp)</label><input id="aRew" type="number" inputmode="numeric"></div><div><label>Lama tonton (detik)</label><input id="aSec" type="number" inputmode="numeric"></div></div>
+      <div class="two"><div><label>Batas per hari / pengguna</label><input id="aLim" type="number" inputmode="numeric"></div><div><label>Jeda antar iklan (detik)</label><input id="aCd" type="number" inputmode="numeric"></div></div>
+      <label>Kode iklan (HTML dari jaringan iklan)</label>
+      <textarea id="aCode" rows="5" placeholder="Tempel kode iklan di sini (tag script/ins dari AdSense, Adsterra, Monetag, dll)" style="font-family:monospace;font-size:12.5px"></textarea>
+      <label>Atau link halaman iklan (opsional)</label>
+      <input id="aUrl" placeholder="https://...">
+      <div class="mut" style="margin-top:6px">Kode iklan dimuat di dalam kotak terisolasi, tidak bisa membaca akun pengguna. Jika kode dan link sama-sama diisi, yang dipakai kode iklan.</div>
+      <div class="mut" id="aStat" style="margin-top:6px"></div>
+      <div class="row"><button onclick="saveAds()"><svg class="ic" style="width:18px;height:18px"><use href="#i-save"/></svg>Simpan misi iklan</button></div>
+    </div>
   </div>
 </main>
 
@@ -426,6 +440,10 @@ async function loadTpl(){
     $("gColor").value=/^#[0-9a-f]{6}$/i.test(g.color||"")?g.color:"#0b0507";$("gOv").value=g.overlay==null?55:g.overlay;$("gImage").value=g.image||"";prevBg();
     $("mOn").checked=m.enabled!==false;$("mUrl").value=m.url||"";$("mVol").value=Math.round((m.volume==null?.5:m.volume)*100);$("mVolV").textContent=$("mVol").value;
     $("rBase").value=rf.base_url||"https://syuizipenghasiluang.vercel.app/";$("rJoin").value=rf.join==null?500:rf.join;$("rD1").value=rf.day1==null?1000:rf.day1;$("rD2").value=rf.day2==null?1500:rf.day2;
+    const ad=s.ads||{};
+    $("aOn").checked=ad.enabled===true;$("aRew").value=ad.reward==null?100:ad.reward;$("aSec").value=ad.seconds==null?30:ad.seconds;
+    $("aLim").value=ad.daily_limit==null?10:ad.daily_limit;$("aCd").value=ad.cooldown==null?10:ad.cooldown;$("aCode").value=ad.code||"";$("aUrl").value=ad.url||"";
+    rpc("sz_admin_stats").then(st=>{$("aStat").textContent="Hari ini: "+(st.ad_views_today||0)+" iklan ditonton, hadiah dibayar "+rp(st.ad_paid_today||0)}).catch(()=>{});
     $("rBase").oninput=exRef;exRef();
   }catch(e){toast(e.message)}
 }
@@ -481,6 +499,11 @@ function playTest(){
 async function saveMusic(){
   const u=$("mUrl").value.trim();if(u&&!safeUrl(u))return toast("Link musik harus diawali http:// atau https://");
   try{await rpc("sz_admin_set_setting",{p_key:"music",p_value:{enabled:$("mOn").checked,url:u,volume:$("mVol").value/100}});toast("Musik disimpan");if(TA){TA.pause();TA=null}}catch(e){toast(e.message)}
+}
+async function saveAds(){
+  const n=id=>Math.max(0,Math.floor(Number($(id).value)||0));
+  const u=$("aUrl").value.trim();if(u&&!safeUrl(u))return toast("Link iklan harus diawali http:// atau https://");
+  try{await rpc("sz_admin_set_setting",{p_key:"ads",p_value:{enabled:$("aOn").checked,reward:n("aRew"),seconds:n("aSec"),daily_limit:n("aLim"),cooldown:n("aCd"),code:$("aCode").value.trim(),url:u}});toast("Misi iklan disimpan")}catch(e){toast(e.message)}
 }
 async function saveRef(){
   const n=id=>Math.max(0,Math.floor(Number($(id).value)||0));
