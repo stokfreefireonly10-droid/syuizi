@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b0507">
+<title>Syuizi Admin</title>
+<style>
+:root{--bg:#0b0507;--red:#ff2e3d;--rg:rgba(255,46,61,.45);--card:rgba(24,14,17,.88);--tx:#f6ecee;--mut:#ad9a9f;--line:rgba(255,255,255,.09);--rline:rgba(255,46,61,.28);--grn:#33d489;--amb:#ffb23e;--blue:#5aa9ff}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:96px;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(55% 38% at 12% 0%,rgba(255,46,61,.26),transparent 70%),radial-gradient(50% 40% at 100% 100%,rgba(255,46,61,.18),transparent 70%);animation:glowp 7s ease-in-out infinite alternate}
+@keyframes glowp{from{opacity:.7}to{opacity:1}}
+svg.ic{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+header{position:sticky;top:0;z-index:6;background:linear-gradient(180deg,rgba(11,5,7,.94),rgba(11,5,7,.6));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rline);padding:12px 16px}
+.hd{display:flex;align-items:center;justify-content:space-between;max-width:820px;margin:0 auto}
+.brand{font-size:20px;font-weight:900;letter-spacing:2px;text-shadow:0 0 14px var(--rg)}.brand span{color:var(--red);text-shadow:0 0 16px var(--red)}
+.brand small{font-size:11px;letter-spacing:1px;color:var(--mut);margin-left:8px;font-weight:700;text-shadow:none}
+main{max-width:820px;margin:0 auto;padding:16px 14px}
+.tab{display:none}.tab.active{display:block;animation:pg .38s cubic-bezier(.2,.8,.2,1)}
+@keyframes pg{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;backdrop-filter:blur(8px);box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.card.glow{border-color:var(--rline);box-shadow:0 0 26px rgba(255,46,61,.16),0 6px 24px rgba(0,0,0,.4)}
+.card h2{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:8px}.card h2 svg{color:var(--red)}
+h3.pt{font-size:19px;margin:2px 0 14px;font-weight:900}
+.mut{color:var(--mut);font-size:13px;line-height:1.5}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 5px;color:#e6d4d8}
+input,select,textarea{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:12px;font-size:14.5px;background:rgba(8,4,6,.7);color:var(--tx);font-family:inherit;transition:border-color .2s,box-shadow .2s}
+input::placeholder{color:#7c6a6f}
+select option{background:#1b1013}
+input:focus,select:focus{outline:0;border-color:var(--red);box-shadow:0 0 0 3px rgba(255,46,61,.2),0 0 14px rgba(255,46,61,.25)}
+input[type=color]{padding:3px;height:44px;cursor:pointer}
+input[type=file]{padding:9px}
+input[type=range]{padding:0;height:30px;accent-color:#ff2e3d;border:0;background:none;box-shadow:none}
+/* tombol: halus + animasi saat ditekan */
+button{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 15px;border:0;border-radius:12px;font-weight:800;background:linear-gradient(135deg,#ff3a49,#c2121f);color:#fff;cursor:pointer;font-size:13.5px;font-family:inherit;box-shadow:0 4px 16px rgba(255,46,61,.32);transition:transform .14s cubic-bezier(.3,.7,.4,1.4),box-shadow .2s,filter .2s,background .2s}
+button:hover{filter:brightness(1.12);box-shadow:0 6px 22px rgba(255,46,61,.5)}
+button:active{transform:scale(.92);filter:brightness(.9);box-shadow:inset 0 2px 10px rgba(0,0,0,.4)}
+button.ok{background:linear-gradient(135deg,#2fcf85,#13894f);box-shadow:0 4px 16px rgba(51,212,137,.3)}
+button.sec{background:rgba(255,46,61,.1);color:#ffb3b9;border:1px solid var(--rline);box-shadow:none}
+button.no{background:rgba(255,46,61,.1);color:#ff7b86;border:1px solid rgba(255,46,61,.45);box-shadow:none}
+button.block{width:100%;padding:13px;font-size:15px}
+button:disabled{opacity:.45;cursor:default;transform:none;filter:none}
+.rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.4);transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+.row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.pills button{padding:8px 13px;background:rgba(255,255,255,.05);color:var(--mut);border:1px solid var(--line);box-shadow:none;font-size:12.5px}
+.pills button.active{background:rgba(255,46,61,.2);color:#fff;border-color:var(--red);box-shadow:0 0 14px rgba(255,46,61,.35)}
+.item{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);font-size:14px;align-items:flex-start;flex-wrap:wrap}
+.item:last-child{border:0}
+.tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:rgba(255,178,62,.14);color:var(--amb);white-space:nowrap;border:1px solid rgba(255,178,62,.25)}
+.tag.ok{background:rgba(51,212,137,.12);color:var(--grn);border-color:rgba(51,212,137,.28)}.tag.no{background:rgba(255,46,61,.12);color:#ff7b86;border-color:rgba(255,46,61,.3)}.tag.info{background:rgba(90,169,255,.12);color:var(--blue);border-color:rgba(90,169,255,.28)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:rgba(0,0,0,.35);border:1px solid var(--rline);border-radius:16px;padding:15px;animation:pg .45s both}
+.stat small{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut);font-weight:600;margin-bottom:8px}.stat small svg{width:16px;height:16px;color:var(--red)}
+.stat b{font-size:22px;font-weight:900;text-shadow:0 0 14px var(--rg)}
+.stat em{display:block;font-style:normal;font-size:12px;color:var(--mut);margin-top:3px}
+.av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#ff3a49,#7a0b17);display:flex;align-items:center;justify-content:center;font-weight:800;flex:none;box-shadow:0 0 14px var(--rg)}
+.usr{display:flex;gap:12px;flex:1;min-width:230px}
+.bal{font-weight:900;color:#ff6b77;font-size:17px;margin-bottom:8px;text-align:right}
+.switch{display:flex;align-items:center;gap:10px;margin:12px 0 4px;font-size:14px;font-weight:600;cursor:pointer}
+.switch input{appearance:none;-webkit-appearance:none;width:46px;height:26px;border-radius:99px;background:rgba(255,255,255,.12);position:relative;cursor:pointer;transition:background .25s,box-shadow .25s;padding:0;border:0;flex:none}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .25s cubic-bezier(.3,.7,.4,1.4)}
+.switch input:checked{background:var(--red);box-shadow:0 0 14px var(--rg)}
+.switch input:checked::after{transform:translateX(20px)}
+.prev{margin-top:12px;border-radius:16px;overflow:hidden;position:relative;min-height:120px;background:linear-gradient(120deg,#ff2e3d,#7a0b17 80%);color:#fff;display:flex;align-items:flex-end;border:1px solid var(--rline)}
+.prev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.prev .bt{position:relative;padding:14px;width:100%;background:linear-gradient(0deg,rgba(0,0,0,.6),transparent)}.prev b{display:block;font-size:17px}
+.bgprev{margin-top:12px;border-radius:16px;overflow:hidden;position:relative;height:170px;border:1px solid var(--rline);display:flex;align-items:center;justify-content:center}
+.bgprev .l{position:absolute;inset:0;background-size:cover;background-position:center}
+.bgprev .g{position:absolute;inset:0;background:radial-gradient(60% 50% at 15% 0%,rgba(255,46,61,.3),transparent 70%)}
+.bgprev .o{position:absolute;inset:0;background:#000}
+.bgprev .t{position:relative;font-weight:900;letter-spacing:3px;font-size:26px;text-shadow:0 0 18px var(--red)}.bgprev .t span{color:var(--red)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* navigasi di bawah */
+nav{position:fixed;bottom:0;left:0;right:0;z-index:8;background:rgba(14,7,9,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--rline);padding-bottom:env(safe-area-inset-bottom);display:none}
+nav div{display:flex;max-width:820px;margin:0 auto}
+nav a{position:relative;overflow:hidden;flex:1;text-align:center;padding:10px 0 11px;font-size:10.5px;color:var(--mut);cursor:pointer;font-weight:700;transition:color .25s,transform .15s;user-select:none}
+nav a svg{display:block;margin:0 auto 3px;transition:transform .25s}
+nav a:active{transform:scale(.88)}
+nav a.active{color:#ff4a58}nav a.active svg{filter:drop-shadow(0 0 7px var(--red));transform:translateY(-2px)}
+nav a.active::before{content:"";position:absolute;top:0;left:28%;right:28%;height:2px;border-radius:0 0 4px 4px;background:var(--red);box-shadow:0 0 12px var(--red)}
+nav a .dot{position:absolute;top:6px;left:56%;min-width:17px;height:17px;border-radius:99px;background:var(--red);color:#fff;font-size:10px;line-height:17px;font-weight:800;padding:0 4px;box-shadow:0 0 10px var(--red)}
+#toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-120px);background:#1b0b0f;border:1px solid var(--red);color:#fff;padding:11px 18px;border-radius:12px;font-size:14px;transition:.35s cubic-bezier(.2,.8,.2,1);z-index:80;max-width:92%;text-align:center;box-shadow:0 0 24px rgba(255,46,61,.45)}
+#toast.show{transform:translateX(-50%) translateY(0)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.ov.show{display:flex;animation:fd .25s}@keyframes fd{from{opacity:0}to{opacity:1}}
+.modal{background:#150b0e;border:1px solid var(--rline);border-radius:22px;padding:20px;width:100%;max-width:420px;box-shadow:0 0 40px rgba(255,46,61,.25);animation:mp .3s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes mp{from{transform:scale(.92) translateY(14px);opacity:0}to{transform:none;opacity:1}}
+.modal h2{font-size:17px;margin-bottom:4px}
+.login{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.login .logo{font-size:36px;font-weight:900;letter-spacing:4px;margin-bottom:6px;animation:lg 3.2s ease-in-out infinite alternate}.login .logo span{color:var(--red)}
+@keyframes lg{from{text-shadow:0 0 12px var(--rg)}to{text-shadow:0 0 30px var(--red),0 0 60px var(--rg)}}
+.login .card{width:100%;max-width:380px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></symbol>
+<symbol id="i-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></symbol>
+<symbol id="i-deposit" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14a5 5 0 0 1 5 5"/></symbol>
+<symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 1.5-2.2-.5-1.2.3-2.3 1.6-2.3H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></symbol>
+<symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></symbol>
+<symbol id="i-unlock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13M9 7V4h6v3"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 20h14"/></symbol>
+<symbol id="i-save" viewBox="0 0 24 24"><path d="M5 3h11l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/><circle cx="16" cy="13.5" r="1.2"/></symbol>
+<symbol id="i-task" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></symbol>
+<symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"/><path d="M12 8C10 3 6 4 7 6.5S11 8 12 8zM12 8c2-5 6-4 5-1.5S13 8 12 8z"/></symbol>
+<symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/></symbol>
+<symbol id="i-megaphone" viewBox="0 0 24 24"><path d="M3 11v3a1 1 0 0 0 1 1h3l8 5V5L7 10H4a1 1 0 0 0-1 1z"/><path d="M19 9a4 4 0 0 1 0 6"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+</defs></svg>
+
+<!-- MASUK -->
+<div class="login" id="loginBox">
+  <div class="logo">SYU<span>IZI</span></div>
+  <div class="mut" style="margin-bottom:18px">Panel Admin</div>
+  <div class="card glow">
+    <label style="margin-top:0">Email</label><input id="aEmail" type="email" autocomplete="email" placeholder="email admin">
+    <label>Sandi</label><input id="aPw" type="password" autocomplete="current-password" placeholder="Sandi" onkeydown="if(event.key==='Enter')login()">
+    <button class="block" style="margin-top:18px" onclick="login()"><svg class="ic"><use href="#i-shield"/></svg>Masuk admin</button>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div id="panel" style="display:none">
+<header><div class="hd"><div class="brand">SYU<span>IZI</span><small>ADMIN</small></div><button class="sec" onclick="logout()"><svg class="ic" style="width:18px;height:18px"><use href="#i-logout"/></svg>Keluar</button></div></header>
+<main>
+  <div class="tab active" id="t-ring">
+    <h3 class="pt">Ringkasan</h3>
+    <div class="grid" id="statGrid"></div>
+    <div class="card" style="margin-top:14px"><h2><svg class="ic"><use href="#i-alert"/></svg>Perlu diproses</h2>
+      <div class="mut" id="ringNote">Memuat...</div>
+      <div class="row"><button onclick="show('wd')"><svg class="ic" style="width:18px;height:18px"><use href="#i-card"/></svg>Buka penarikan</button></div>
+    </div>
+  </div>
+
+  <div class="tab" id="t-wd">
+    <h3 class="pt">Penarikan (WD)</h3>
+    <div class="card">
+      <div class="pills" id="wdPills"></div>
+      <div class="mut">Transfer manual ke e-wallet pengguna, lalu tekan Selesai. Tolak mengembalikan saldo pengguna.</div>
+      <div id="wdList"></div>
+    </div>
+  </div>
+
+  <div class="tab" id="t-dep">
+    <h3 class="pt">Riwayat deposit</h3>
+    <div class="card">
+      <div class="pills" id="depPills"></div>
+      <div id="depList"></div>
+    </div>
+  </div>
+
+  <div class="tab" id="t-usr">
+    <h3 class="pt">Pengguna</h3>
+    <div class="card">
+      <div class="row" style="margin-top:0"><input id="usrQ" placeholder="Cari email atau nama" style="flex:1;min-width:170px" onkeydown="if(event.key==='Enter')loadUsr()"><button onclick="loadUsr()">Cari</button></div>
+      <div id="usrList"></div>
+    </div>
+  </div>
+
+  <div class="tab" id="t-tpl">
+    <h3 class="pt">Tampilan &amp; pengaturan</h3>
+
+    <div class="card">
+      <h2><svg class="ic"><use href="#i-megaphone"/></svg>Banner beranda</h2>
+      <label class="switch"><input type="checkbox" id="bActive" checked onchange="prevBanner()">Tampilkan banner</label>
+      <label>Judul</label><input id="bTitle" maxlength="80" oninput="prevBanner()">
+      <label>Teks</label><input id="bText" maxlength="200" oninput="prevBanner()">
+      <label>Link saat banner ditekan (opsional)</label><input id="bLink" placeholder="https://...">
+      <label>Gambar banner (opsional)</label>
+      <input id="bImage" placeholder="https://... atau unggah file di bawah" oninput="prevBanner()">
+      <div class="row"><input type="file" id="bFile" accept="image/jpeg,image/png,image/webp" style="flex:1;min-width:160px"><button class="sec" onclick="upBanner()"><svg class="ic" style="width:18px;height:18px"><use href="#i-upload"/></svg>Unggah</button></div>
+      <div class="mut" style="margin-top:6px">Disarankan gambar lebar (mis. 1000x400), maks. 3 MB.</div>
+      <div id="bPrev"></div>
+      <div class="row"><button onclick="saveBanner()"><svg class="ic" style="width:18px;height:18px"><use href="#i-save"/></svg>Simpan banner</button></div>
+    </div>
+
+    <div class="card">
+      <h2><svg class="ic"><use href="#i-image"/></svg>Background aplikasi</h2>
+      <div class="mut">Berlaku di seluruh Syuizi (halaman masuk, beranda, dan lainnya).</div>
+      <div class="two">
+        <div><label>Warna dasar</label><input type="color" id="gColor" value="#0b0507" oninput="prevBg()"></div>
+        <div><label>Gelapkan gambar: <b id="gOvV">55</b>%</label><input type="range" id="gOv" min="0" max="90" value="55" oninput="prevBg()"></div>
+      </div>
+      <label>Gambar background (opsional)</label>
+      <input id="gImage" placeholder="https://... atau unggah file di bawah" oninput="prevBg()">
+      <div class="row"><input type="file" id="gFile" accept="image/jpeg,image/png,image/webp,image/gif" style="flex:1;min-width:160px"><button class="sec" onclick="upMedia('gFile','gImage',prevBg,'bg')"><svg class="ic" style="width:18px;height:18px"><use href="#i-upload"/></svg>Unggah</button><button class="no" onclick="$('gImage').value='';prevBg()"><svg class="ic" style="width:18px;height:18px"><use href="#i-x"/></svg>Hapus gambar</button></div>
+      <div class="mut" style="margin-top:6px">Maks. 10 MB. Gambar tegak (portrait) paling pas untuk ponsel.</div>
+      <div class="bgprev" id="gPrev"><div class="l"></div><div class="g"></div><div class="o"></div><div class="t">SYU<span>IZI</span></div></div>
+      <div class="row"><button onclick="saveBg()"><svg class="ic" style="width:18px;height:18px"><use href="#i-save"/></svg>Simpan background</button></div>
+    </div>
+
+    <div class="card">
+      <h2><svg class="ic"><use href="#i-music"/></svg>Musik halaman masuk/daftar</h2>
+      <div class="mut">Diputar di halaman masuk dan daftar. Browser baru mengizinkan suara setelah layar disentuh, jadi musik mulai pada sentuhan pertama.</div>
+      <label class="switch"><input type="checkbox" id="mOn" checked>Putar musik latar</label>
+      <label>File musik (opsional)</label>
+      <input id="mUrl" placeholder="https://... .mp3 atau unggah di bawah (kosong = musik bawaan)">
+      <div class="row"><input type="file" id="mFile" accept="audio/mpeg,audio/ogg,audio/wav,audio/mp4,audio/aac" style="flex:1;min-width:160px"><button class="sec" onclick="upMedia('mFile','mUrl',null,'musik')"><svg class="ic" style="width:18px;height:18px"><use href="#i-upload"/></svg>Unggah</button><button class="sec" onclick="playTest()"><svg class="ic" style="width:18px;height:18px"><use href="#i-play"/></svg>Dengarkan</button></div>
+      <label>Volume: <b id="mVolV">50</b>%</label><input type="range" id="mVol" min="0" max="100" value="50" oninput="$('mVolV').textContent=this.value">
+      <div class="row"><button onclick="saveMusic()"><svg class="ic" style="width:18px;height:18px"><use href="#i-save"/></svg>Simpan musik</button></div>
+    </div>
+
+    <div class="card">
+      <h2><svg class="ic"><use href="#i-gift"/></svg>Undangan</h2>
+      <label>Alamat dasar link undangan</label>
+      <input id="rBase" placeholder="https://situsmu.vercel.app/">
+      <div class="mut" style="margin-top:6px">Link yang dibagikan pengguna: alamat ini + kode mereka. Contoh: <b id="rEx"></b></div>
+      <div class="two"><div><label>Teman daftar (Rp)</label><input id="rJoin" type="number" inputmode="numeric"></div><div><label>Teman tugas hari 1 (Rp)</label><input id="rD1" type="number" inputmode="numeric"></div></div>
+      <label>Teman tugas hari 2 (Rp)</label><input id="rD2" type="number" inputmode="numeric">
+      <div class="row"><button onclick="saveRef()"><svg class="ic" style="width:18px;height:18px"><use href="#i-save"/></svg>Simpan undangan</button></div>
+    </div>
+  </div>
+</main>
+
+<nav id="nav"><div>
+  <a data-t="ring" class="active"><svg class="ic"><use href="#i-grid"/></svg>Ringkasan</a>
+  <a data-t="wd"><svg class="ic"><use href="#i-card"/></svg>Penarikan<span class="dot" id="wdDot" style="display:none"></span></a>
+  <a data-t="dep"><svg class="ic"><use href="#i-deposit"/></svg>Deposit</a>
+  <a data-t="usr"><svg class="ic"><use href="#i-users"/></svg>Pengguna</a>
+  <a data-t="tpl"><svg class="ic"><use href="#i-palette"/></svg>Tampilan</a>
+</div></nav>
+</div>
+
+<div class="ov" id="dlg"><div class="modal">
+  <h2 id="dT"></h2><div class="mut" id="dM" style="margin-top:4px"></div><div id="dF"></div>
+  <div class="row" style="margin-top:16px;justify-content:flex-end"><button class="sec" id="dNo">Batal</button><button id="dYes">OK</button></div>
+</div></div>
+<div id="toast"></div>
+
+<script>
+const SB_URL="https://plipnuzrlcfnciqgttpl.supabase.co";
+const SB_KEY="sb_publishable_jmUR3WyikCP2bT6j-IszEQ_nDipIxPt";
+const K="syuizi_admin_session";
+let S=null;try{S=JSON.parse(localStorage.getItem(K)||"null")}catch(e){}
+const $=id=>document.getElementById(id);
+const rp=n=>"Rp"+Math.floor(n||0).toLocaleString("id-ID");
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl=u=>/^https?:\/\/[^\s]+$/i.test(String(u||""))?String(u):"";
+const fmt=t=>t?new Date(t).toLocaleString("id-ID",{timeZone:"Asia/Jakarta",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):"-";
+const ic=(n,s)=>`<svg class="ic" style="width:${s||18}px;height:${s||18}px"><use href="#i-${n}"/></svg>`;
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),3200)}
+
+/* efek tekan */
+document.addEventListener("pointerdown",e=>{
+  const el=e.target.closest("button,nav a");if(!el||el.disabled)return;
+  const r=el.getBoundingClientRect(),d=Math.max(r.width,r.height)*2,s=document.createElement("span");
+  s.className="rip";s.style.cssText="width:"+d+"px;height:"+d+"px;left:"+(e.clientX-r.left-d/2)+"px;top:"+(e.clientY-r.top-d/2)+"px";
+  el.appendChild(s);setTimeout(()=>s.remove(),650);
+},{passive:true});
+
+/* kotak dialog (pengganti prompt/confirm) */
+function ask(title,msg,fields,okText,danger){
+  return new Promise(res=>{
+    $("dT").textContent=title;$("dM").textContent=msg||"";
+    $("dF").innerHTML=(fields||[]).map((f,i)=>`<label>${esc(f.label)}</label><input id="df${i}" type="${f.type||"text"}" placeholder="${esc(f.ph||"")}" ${f.type==="number"?'inputmode="numeric"':""} value="${esc(f.val||"")}">`).join("");
+    const yes=$("dYes");yes.textContent=okText||"OK";yes.className=danger?"no":"";
+    const done=v=>{$("dlg").classList.remove("show");yes.onclick=$("dNo").onclick=null;res(v)};
+    yes.onclick=()=>{
+      const out={};
+      for(let i=0;i<(fields||[]).length;i++){out[fields[i].k]=$("df"+i).value.trim();if(fields[i].req&&!out[fields[i].k]){toast("Isi "+fields[i].label.toLowerCase());return}}
+      done(out);
+    };
+    $("dNo").onclick=()=>done(null);
+    $("dlg").classList.add("show");setTimeout(()=>{const f=$("df0");if(f)f.focus()},60);
+  });
+}
+
+function save(d){S={access:d.access_token,refresh:d.refresh_token,exp:Date.now()+(d.expires_in||3600)*1000};try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+async function tok(){
+  if(!S)throw new Error("Belum masuk");
+  if(Date.now()>S.exp-60000){
+    const r=await fetch(SB_URL+"/auth/v1/token?grant_type=refresh_token",{method:"POST",headers:{apikey:SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({refresh_token:S.refresh})});
+    if(!r.ok){logout();throw new Error("Sesi berakhir, masuk lagi")}
+    save(await r.json());
+  }
+  return S.access;
+}
+async function rpc(fn,args){
+  const t=await tok();
+  const r=await fetch(SB_URL+"/rest/v1/rpc/"+fn,{method:"POST",headers:{apikey:SB_KEY,Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify(args||{})});
+  let d=null;try{d=await r.json()}catch(e){}
+  if(!r.ok)throw new Error((d&&d.message)||"Gagal");
+  return d;
+}
+async function login(){
+  try{
+    const r=await fetch(SB_URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({email:$("aEmail").value.trim(),password:$("aPw").value})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(/not confirmed/i.test(String(d.msg||d.message||d.error_description))?"Email belum diverifikasi":"Email atau sandi salah");
+    save(d);await start();
+  }catch(e){toast(e.message)}
+}
+function logout(){S=null;try{localStorage.removeItem(K)}catch(e){}$("panel").style.display="none";$("nav").style.display="none";$("loginBox").style.display="flex";$("aPw").value=""}
+async function start(){
+  try{await rpc("sz_admin_stats")}
+  catch(e){toast(e.message==="Khusus admin"?"Akun ini bukan admin":e.message);if(e.message==="Khusus admin")logout();return}
+  $("loginBox").style.display="none";$("panel").style.display="block";$("nav").style.display="block";show("ring");
+}
+document.querySelectorAll("nav a[data-t]").forEach(a=>a.onclick=()=>show(a.dataset.t));
+function show(t){
+  document.querySelectorAll("nav a[data-t]").forEach(a=>a.classList.toggle("active",a.dataset.t===t));
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.id==="t-"+t));
+  window.scrollTo(0,0);
+  if(t==="ring")loadRing();if(t==="wd")loadWd();if(t==="dep")loadDep();if(t==="usr")loadUsr();if(t==="tpl")loadTpl();
+}
+function pills(id,opts,cur,fn){
+  $(id).innerHTML=opts.map(o=>`<button class="${o[0]===cur?"active":""}" onclick="${fn}('${o[0]}')">${o[1]}</button>`).join("");
+}
+
+/* ---------- Ringkasan ---------- */
+async function loadRing(){
+  try{
+    const s=await rpc("sz_admin_stats");
+    const cards=[["users","Pengguna",s.users.toLocaleString("id-ID"),s.blocked?s.blocked+" diblokir":"tidak ada yang diblokir"],
+      ["card","Penarikan menunggu",s.wd_pending,rp(s.wd_pending_sum)],
+      ["deposit","Pembayaran hari ini",rp(s.paid_today),"deposit + level"],
+      ["wallet","Total pembayaran",rp(s.paid_total),"sejak awal"],
+      ["task","Tugas aktif",s.tasks_open,"sedang berjalan"],
+      ["wallet","Saldo semua pengguna",rp(s.saldo_total),"kewajiban ke pengguna"]];
+    $("statGrid").innerHTML=cards.map((c,i)=>`<div class="stat" style="animation-delay:${i*60}ms"><small>${ic(c[0],16)}${c[1]}</small><b>${c[2]}</b><em>${c[3]}</em></div>`).join("");
+    $("ringNote").textContent=s.wd_pending?s.wd_pending+" permintaan penarikan ("+rp(s.wd_pending_sum)+") menunggu kamu transfer.":"Tidak ada penarikan yang menunggu. Semua beres.";
+    const d=$("wdDot");d.style.display=s.wd_pending?"block":"none";d.textContent=s.wd_pending;
+  }catch(e){toast(e.message)}
+}
+
+/* ---------- Penarikan ---------- */
+let WDF="Diproses";
+function setWd(f){WDF=f;loadWd()}
+async function loadWd(){
+  pills("wdPills",[["Diproses","Menunggu"],["Selesai","Selesai"],["Ditolak","Ditolak"],["all","Semua"]],WDF,"setWd");
+  try{
+    const rows=await rpc("sz_admin_list_withdrawals",{p_status:WDF});
+    $("wdList").innerHTML=rows.map(r=>`<div class="item"><div><b style="font-size:16px">${rp(r.jumlah)}</b> &rarr; ${esc(r.metode)} <b>${esc(r.nomor)}</b>
+      <div>a.n. <b>${esc(r.nama)}</b></div><div class="mut">${esc(r.username)} &middot; ${esc(r.email)} &middot; ${fmt(r.created_at)}</div></div>
+      <div class="row" style="margin:0">${r.status==="Diproses"?`<button class="ok" onclick="reviewWd(${r.id},true)">${ic("check")}Selesai</button><button class="no" onclick="reviewWd(${r.id},false)">${ic("x")}Tolak</button>`:`<span class="tag ${r.status==="Selesai"?"ok":"no"}">${esc(r.status)}</span>`}</div></div>`).join("")||'<div class="mut" style="margin-top:12px">Tidak ada data.</div>';
+  }catch(e){toast(e.message)}
+}
+async function reviewWd(id,ok){
+  const a=await ask(ok?"Tandai selesai?":"Tolak penarikan?",ok?"Pastikan uang sudah kamu transfer ke e-wallet pengguna.":"Saldo pengguna akan dikembalikan.",null,ok?"Ya, selesai":"Ya, tolak",!ok);
+  if(!a)return;
+  try{const r=await rpc("sz_admin_review_withdraw",{p_id:id,p_ok:ok});toast(r?"Tersimpan":"Sudah diproses sebelumnya");loadWd();loadRing()}catch(e){toast(e.message)}
+}
+
+/* ---------- Riwayat deposit ---------- */
+let DPF="deposit";
+function setDp(f){DPF=f;loadDep()}
+async function loadDep(){
+  pills("depPills",[["deposit","Deposit"],["level","Pembelian level"],["all","Semua"]],DPF,"setDp");
+  try{
+    const rows=await rpc("sz_admin_list_payments",{p_kind:DPF});
+    const st={pending:["Menunggu",""],paid:["Berhasil","ok"],failed:["Gagal","no"]};
+    $("depList").innerHTML=rows.map(r=>{const s=st[r.status]||["",""];return `<div class="item"><div><b style="font-size:16px">${rp(r.amount)}</b> <span class="mut">${r.kind==="level"?"Level "+esc(r.level):"Deposit"}</span>
+      <div class="mut">${esc(r.username)} &middot; ${esc(r.email)}</div><div class="mut">${fmt(r.created_at)}${r.paid_at?" &middot; lunas "+fmt(r.paid_at):""}</div></div><span class="tag ${s[1]}">${s[0]}</span></div>`}).join("")||'<div class="mut" style="margin-top:12px">Belum ada data.</div>';
+  }catch(e){toast(e.message)}
+}
+
+/* ---------- Pengguna ---------- */
+const LVN={free:"Free",basic:"Basic",pro:"Pro",ultimate:"Ultimate"};
+async function loadUsr(){
+  try{
+    const rows=await rpc("sz_admin_list_users",{p_search:$("usrQ").value.trim()});
+    $("usrList").innerHTML=rows.map(u=>{
+      const exp=u.level_expires_at?(new Date(u.level_expires_at)<new Date()?'<span class="tag no">level habis</span>':"sampai "+fmt(u.level_expires_at)):"tanpa batas";
+      return `<div class="item"><div class="usr"><div class="av">${esc((u.username||u.email||"U")[0].toUpperCase())}</div><div style="min-width:0"><b>${esc(u.username)}</b> ${u.is_admin?'<span class="tag">admin</span>':""} ${u.blocked?'<span class="tag no">diblokir</span>':""}
+        <div class="mut" style="word-break:break-all">${esc(u.email)}</div><div class="mut">Level ${esc(LVN[u.level]||u.level)} (${exp}) &middot; daftar ${fmt(u.created_at)}</div>
+        ${u.blocked&&u.blocked_reason?`<div class="mut">Alasan blokir: ${esc(u.blocked_reason)}</div>`:""}</div></div>
+        <div style="margin-left:auto"><div class="bal">${rp(u.saldo)}</div>
+        <div class="row" style="justify-content:flex-end;margin:0">
+          <button class="ok" onclick="adj('${u.id}',1)">${ic("plus")}Saldo</button><button class="sec" onclick="adj('${u.id}',-1)">${ic("minus")}Saldo</button>
+          <button class="sec" onclick="warn('${u.id}')">${ic("alert")}Peringatan</button>
+          ${u.is_admin?"":(u.blocked?`<button class="ok" onclick="block('${u.id}',false)">${ic("unlock")}Buka blokir</button>`:`<button class="no" onclick="block('${u.id}',true)">${ic("ban")}Blokir</button>`)}
+          ${u.is_admin?"":`<button class="no" data-id="${u.id}" data-em="${esc(u.email)}" onclick="del(this.dataset.id,this.dataset.em)">${ic("trash")}Hapus</button>`}
+        </div></div></div>`}).join("")||'<div class="mut" style="margin-top:12px">Tidak ada pengguna.</div>';
+  }catch(e){toast(e.message)}
+}
+async function adj(id,sign){
+  const a=await ask(sign>0?"Tambah saldo":"Kurangi saldo","",[{k:"n",label:"Jumlah (Rp)",type:"number",ph:"10000",req:true},{k:"note",label:"Catatan (opsional)"}],"Simpan");
+  if(!a)return;
+  const n=Math.floor(Number(String(a.n).replace(/\D/g,"")));if(!n)return toast("Jumlah tidak valid");
+  try{await rpc("sz_admin_adjust_balance",{p_user:id,p_amount:sign*n,p_note:a.note});toast("Saldo diperbarui");loadUsr()}catch(e){toast(e.message)}
+}
+async function warn(id){
+  const a=await ask("Kirim peringatan","Muncul saat pengguna membuka Syuizi.",[{k:"m",label:"Isi peringatan",req:true}],"Kirim");
+  if(!a)return;
+  try{await rpc("sz_admin_warn",{p_user:id,p_message:a.m});toast("Peringatan terkirim")}catch(e){toast(e.message)}
+}
+async function block(id,b){
+  let reason="";
+  if(b){const a=await ask("Blokir pengguna","Alasan terlihat oleh pengguna.",[{k:"r",label:"Alasan blokir"}],"Blokir",true);if(!a)return;reason=a.r}
+  else{const a=await ask("Buka blokir?","",null,"Buka blokir");if(!a)return}
+  try{await rpc("sz_admin_set_blocked",{p_user:id,p_blocked:b,p_reason:reason});toast(b?"Pengguna diblokir":"Blokir dibuka");loadUsr()}catch(e){toast(e.message)}
+}
+async function del(id,email){
+  const a=await ask("Hapus pengguna","Menghapus "+email+" BESERTA semua datanya (saldo, tugas, riwayat). Tidak bisa dibatalkan.",[{k:"t",label:"Ketik HAPUS untuk melanjutkan",ph:"HAPUS"}],"Hapus permanen",true);
+  if(!a||a.t!=="HAPUS")return a&&toast("Dibatalkan: kata HAPUS tidak cocok");
+  try{await rpc("sz_admin_delete_user",{p_user:id});toast("Pengguna dihapus");loadUsr()}catch(e){toast(e.message)}
+}
+
+/* ---------- Tampilan ---------- */
+async function getSettings(){
+  const t=await tok();
+  const r=await fetch(SB_URL+"/rest/v1/sz_settings?select=key,value",{headers:{apikey:SB_KEY,Authorization:"Bearer "+t}});
+  const o={};(await r.json()).forEach(x=>o[x.key]=x.value);return o;
+}
+async function loadTpl(){
+  try{
+    const s=await getSettings(),b=s.banner||{},g=s.background||{},m=s.music||{},rf=s.referral||{};
+    $("bActive").checked=b.active!==false;$("bTitle").value=b.title||"";$("bText").value=b.text||"";$("bLink").value=b.link||"";$("bImage").value=b.image||"";prevBanner();
+    $("gColor").value=/^#[0-9a-f]{6}$/i.test(g.color||"")?g.color:"#0b0507";$("gOv").value=g.overlay==null?55:g.overlay;$("gImage").value=g.image||"";prevBg();
+    $("mOn").checked=m.enabled!==false;$("mUrl").value=m.url||"";$("mVol").value=Math.round((m.volume==null?.5:m.volume)*100);$("mVolV").textContent=$("mVol").value;
+    $("rBase").value=rf.base_url||"https://syuizipenghasiluang.vercel.app/";$("rJoin").value=rf.join==null?500:rf.join;$("rD1").value=rf.day1==null?1000:rf.day1;$("rD2").value=rf.day2==null?1500:rf.day2;
+    $("rBase").oninput=exRef;exRef();
+  }catch(e){toast(e.message)}
+}
+function exRef(){$("rEx").textContent=($("rBase").value.replace(/\/+$/,"")||"https://...")+"/AB12CD3"}
+function bannerVal(){return{active:$("bActive").checked,title:$("bTitle").value.trim(),text:$("bText").value.trim(),image:$("bImage").value.trim(),link:$("bLink").value.trim()}}
+function prevBanner(){
+  const b=bannerVal(),img=safeUrl(b.image);
+  $("bPrev").innerHTML=`<div class="prev">${img?`<img src="${esc(img)}" alt="">`:""}<div class="bt"><b>${esc(b.title)||"(judul)"}</b><span>${esc(b.text)}</span></div></div>`+(b.active?"":'<div class="mut" style="margin-top:6px">Banner dimatikan (tidak tampil di beranda).</div>');
+}
+async function upload(bucket,fileId,types,maxMb,prefix){
+  const f=$(fileId).files[0];
+  if(!f)throw new Error("Pilih file dulu");
+  if(!types.test(f.type))throw new Error("Format file tidak didukung");
+  if(f.size>maxMb*1024*1024)throw new Error("Ukuran maksimal "+maxMb+" MB");
+  const ext=(f.name.split(".").pop()||"bin").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,5)||"bin",name=prefix+"-"+Date.now()+"."+ext,t=await tok();
+  const r=await fetch(SB_URL+"/storage/v1/object/"+bucket+"/"+name,{method:"POST",headers:{apikey:SB_KEY,Authorization:"Bearer "+t,"Content-Type":f.type},body:f});
+  if(!r.ok)throw new Error("Gagal mengunggah. Pastikan schema.sql versi terbaru sudah dijalankan.");
+  return SB_URL+"/storage/v1/object/public/"+bucket+"/"+name;
+}
+async function upBanner(){
+  try{$("bImage").value=await upload("sz-banners","bFile",/^image\/(jpeg|png|webp)$/,3,"banner");prevBanner();toast("Gambar terunggah. Tekan Simpan banner.")}catch(e){toast(e.message)}
+}
+async function upMedia(fileId,targetId,after,prefix){
+  try{
+    const types=fileId==="mFile"?/^audio\//:/^image\/(jpeg|png|webp|gif)$/;
+    $(targetId).value=await upload("sz-media",fileId,types,10,prefix);if(after)after();toast("Terunggah. Jangan lupa tekan Simpan.");
+  }catch(e){toast(e.message)}
+}
+async function saveBanner(){
+  const v=bannerVal();
+  if(v.image&&!safeUrl(v.image))return toast("Link gambar harus diawali http:// atau https://");
+  if(v.link&&!safeUrl(v.link))return toast("Link banner harus diawali http:// atau https://");
+  try{await rpc("sz_admin_set_banner",{p_value:v});toast("Banner disimpan");prevBanner()}catch(e){toast(e.message)}
+}
+function prevBg(){
+  const img=safeUrl($("gImage").value);
+  $("gOvV").textContent=$("gOv").value;
+  $("gPrev").style.background=$("gColor").value;
+  $("gPrev").querySelector(".l").style.backgroundImage=img?'url("'+img.replace(/"/g,"%22")+'")':"none";
+  $("gPrev").querySelector(".o").style.opacity=img?$("gOv").value/100:0;
+}
+async function saveBg(){
+  const img=$("gImage").value.trim();if(img&&!safeUrl(img))return toast("Link gambar harus diawali http:// atau https://");
+  try{await rpc("sz_admin_set_setting",{p_key:"background",p_value:{color:$("gColor").value,image:img,overlay:Number($("gOv").value)}});toast("Background disimpan. Pengguna melihatnya saat membuka ulang.")}catch(e){toast(e.message)}
+}
+let TA=null;
+function playTest(){
+  const u=safeUrl($("mUrl").value);
+  if(!u)return toast("Tanpa file, Syuizi memakai musik bawaan yang dibuat otomatis (dengarkan di halaman masuk).");
+  if(TA){TA.pause();TA=null;return toast("Dihentikan")}
+  TA=new Audio(u);TA.volume=$("mVol").value/100;TA.play().catch(()=>toast("File musik tidak bisa diputar"));TA.onended=()=>{TA=null};
+}
+async function saveMusic(){
+  const u=$("mUrl").value.trim();if(u&&!safeUrl(u))return toast("Link musik harus diawali http:// atau https://");
+  try{await rpc("sz_admin_set_setting",{p_key:"music",p_value:{enabled:$("mOn").checked,url:u,volume:$("mVol").value/100}});toast("Musik disimpan");if(TA){TA.pause();TA=null}}catch(e){toast(e.message)}
+}
+async function saveRef(){
+  const n=id=>Math.max(0,Math.floor(Number($(id).value)||0));
+  try{await rpc("sz_admin_set_setting",{p_key:"referral",p_value:{base_url:$("rBase").value.trim(),join:n("rJoin"),day1:n("rD1"),day2:n("rD2")}});toast("Pengaturan undangan disimpan")}catch(e){toast(e.message)}
+}
+if(S)start();
+</script>
+</body>
+</html>
