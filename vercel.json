@@ -1,8 +1,8 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/app-syuizi.html" },
-    { "source": "/admin", "destination": "/admin-syuizi.html" },
+    { "source": "/", "destination": "/app-syuizi-v2.html" },
+    { "source": "/admin", "destination": "/admin-syuizi-v2.html" },
     { "source": "/verifikasi", "destination": "/verifikasi-syuizi.html" },
-    { "source": "/:code([A-Za-z0-9]{4,12})", "destination": "/app-syuizi.html" }
+    { "source": "/:code([A-Za-z0-9]{4,12})", "destination": "/app-syuizi-v2.html" }
   ]
 }
