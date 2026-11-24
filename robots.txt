@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin-syuizi.html
+
+Sitemap: https://syuizipenghasiluang.web.id/sitemap.xml
