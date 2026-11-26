@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0b0507">
+<title>Ubah Sandi - Syuizi</title>
+<link rel="icon" href="/favicon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Figtree:wght@400;600;800&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0b0507;color:#f6ecee;font-family:Figtree,system-ui,sans-serif;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px 16px}
+.box{width:100%;max-width:420px;background:#170d10;border:1.5px solid #f6ecee;border-radius:10px;box-shadow:6px 6px 0 #c2121f;overflow:hidden}
+.top{padding:22px;border-bottom:1.5px solid #f6ecee;background-color:#a80f1c;background-image:linear-gradient(rgba(255,255,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.09) 1px,transparent 1px);background-size:24px 24px}
+.logo,h1{font-family:"Archivo Black",system-ui,sans-serif;font-weight:900}
+.logo{font-size:20px}.logo span{color:#ffd35c}
+h1{font-size:27px;line-height:1.15;margin-top:16px}
+.body{padding:22px}
+p{font-size:14px;line-height:1.6;color:#cdbbc0}
+label{display:block;font-size:13px;font-weight:800;margin:16px 0 6px}
+.pw{position:relative}
+input{width:100%;padding:13px 76px 13px 13px;font:16px Figtree,system-ui,sans-serif;color:#f6ecee;background:#0e0709;border:1.5px solid #cdbbc0;border-radius:6px}
+input:focus{outline:0;border-color:#ff2e3d;box-shadow:3px 3px 0 #c2121f}
+.eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);padding:8px;background:none;border:0;color:#ff8d96;font:800 12px Figtree,system-ui,sans-serif;cursor:pointer}
+.btn{display:block;width:100%;margin-top:20px;padding:14px;text-align:center;text-decoration:none;font:800 15px Figtree,system-ui,sans-serif;color:#fff;background:#ff2e3d;border:1.5px solid #f6ecee;border-radius:6px;box-shadow:3px 3px 0 #000;cursor:pointer}
+.btn:active{transform:translate(3px,3px);box-shadow:none}
+.btn:disabled{opacity:.55;cursor:default}
+#msg{margin-top:14px;font-size:13.5px;font-weight:600;line-height:1.5;color:#ff8d96}
+.ok{display:inline-grid;place-items:center;width:56px;height:56px;margin-bottom:14px;background:#8ee6bd;color:#0b2a1b;border:1.5px solid #f6ecee;border-radius:8px;font-size:30px;font-weight:900;box-shadow:3px 3px 0 #000}
+h2{font:900 20px "Archivo Black",system-ui,sans-serif;margin-bottom:8px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main class="box">
+  <div class="top"><div class="logo">syu<span>izi</span></div><h1>Ubah sandi</h1></div>
+  <div class="body">
+    <form id="form" novalidate hidden>
+      <p>Isi sandi baru untuk akunmu, minimal 8 karakter.</p>
+      <label for="p1">Masukkan sandi baru</label>
+      <div class="pw"><input id="p1" type="password" autocomplete="new-password" placeholder="Minimal 8 karakter"><button type="button" class="eye">Lihat</button></div>
+      <label for="p2">Konfirmasi sandi</label>
+      <div class="pw"><input id="p2" type="password" autocomplete="new-password" placeholder="Ulangi sandi baru"><button type="button" class="eye">Lihat</button></div>
+      <button class="btn" id="go" type="submit">Konfirmasi</button>
+      <div id="msg" role="alert"></div>
+    </form>
+    <div id="done" hidden>
+      <div class="ok">&#10003;</div><h2>Sandi berhasil diubah</h2>
+      <p>Silakan masuk memakai sandi barumu.</p>
+      <a class="btn" href="./">Masuk ke Syuizi</a>
+    </div>
+    <div id="bad" hidden>
+      <h2>Link tidak bisa dipakai</h2>
+      <p>Link ini sudah kedaluwarsa, sudah pernah dipakai, atau tidak lengkap. Buka Syuizi, isi email, lalu tekan <b>Lupa kata sandi?</b> untuk minta link baru.</p>
+      <a class="btn" href="./">Kembali ke Syuizi</a>
+    </div>
+  </div>
+</main>
+<script>
+const SB_URL="https://plipnuzrlcfnciqgttpl.supabase.co";
+const SB_KEY="sb_publishable_jmUR3WyikCP2bT6j-IszEQ_nDipIxPt";
+const $=id=>document.getElementById(id);
+const query=new URLSearchParams(location.search),hash=new URLSearchParams(location.hash.slice(1));
+const tokenHash=query.get("token_hash");
+let access=hash.get("type")==="recovery"?hash.get("access_token"):null;
+/* hapus token dari alamat browser */
+history.replaceState(null,"",location.pathname);
+function view(id){["form","done","bad"].forEach(v=>$(v).hidden=v!==id)}
+view(tokenHash||access?"form":"bad");
+
+document.querySelectorAll(".eye").forEach(b=>b.onclick=()=>{
+  const i=b.previousElementSibling,show=i.type==="password";
+  i.type=show?"text":"password";b.textContent=show?"Tutup":"Lihat";
+});
+
+async function api(path,method,body){
+  const h={apikey:SB_KEY,"Content-Type":"application/json"};
+  if(access)h.Authorization="Bearer "+access;
+  let r;
+  try{r=await fetch(SB_URL+"/auth/v1/"+path,{method,headers:h,body:body?JSON.stringify(body):undefined})}
+  catch(e){throw {msg:"Tidak ada koneksi. Coba lagi."}}
+  let d={};try{d=await r.json()}catch(e){}
+  if(!r.ok)throw {status:r.status,code:d.error_code||d.code,msg:String(d.msg||d.message||d.error_description||"")};
+  return d;
+}
+function explain(e){
+  const m=e.msg||"";
+  if(e.code==="same_password"||/different from the old/i.test(m))return "Sandi baru harus berbeda dari sandi lama.";
+  if(e.code==="weak_password"||/weak|at least|should contain/i.test(m))return "Sandi terlalu lemah. Pakai gabungan huruf dan angka yang lebih panjang.";
+  if(e.status===429)return "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.";
+  return m||"Gagal mengubah sandi. Coba lagi.";
+}
+$("form").onsubmit=async ev=>{
+  ev.preventDefault();
+  const a=$("p1").value,b=$("p2").value,msg=$("msg"),btn=$("go");
+  msg.textContent="";
+  if(a.length<8)return msg.textContent="Sandi minimal 8 karakter.";
+  if(a!==b)return msg.textContent="Konfirmasi sandi tidak sama.";
+  btn.disabled=true;btn.textContent="Menyimpan...";
+  try{
+    /* token baru dipakai saat tombol ditekan, jadi tidak hangus hanya karena link dibuka */
+    if(!access){
+      try{
+        const d=await api("verify","POST",{type:"recovery",token_hash:tokenHash});
+        access=d.access_token;
+        if(!access)return view("bad");
+      }catch(e){if(e.status>=400&&e.status<500&&e.status!==429)return view("bad");throw e}
+    }
+    await api("user","PUT",{password:a});
+    try{await api("logout?scope=global","POST")}catch(e){}
+    access=null;
+    try{localStorage.removeItem("syuizi_session")}catch(e){}
+    $("p1").value=$("p2").value="";
+    view("done");
+  }catch(e){
+    if(e.status===401||e.status===403)view("bad");else msg.textContent=explain(e);
+  }finally{btn.disabled=false;btn.textContent="Konfirmasi"}
+};
+</script>
+</body>
+</html>
